@@ -1,5 +1,4 @@
 import json
-from re import I
 import requests
 
 input("Presiona Enter para enviar trafico...")
