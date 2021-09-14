@@ -6,7 +6,7 @@ import Notification from "./notification"
 
 const PubSub = () => { 
 
-    const ENDPOINT = "http://localhost:4001"
+    const ENDPOINT = "http://localhost:4000"
     const [response, setResponse] = useState('')
 
     useEffect(() => {

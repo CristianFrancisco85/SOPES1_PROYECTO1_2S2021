@@ -1,27 +1,19 @@
 const express = require("express")
 const http = require("http")
 const cors = require('cors')
-const endpoints = require("./endPoints")
-const mysql = require('mysql')
 const {PubSub} = require('@google-cloud/pubsub');
-const { emit } = require("process")
 
-const port = process.env.PORT || 4001
+const port = process.env.PORT || 4000
+
 const app = express()
+app.use(cors({
+    origin:'*',
+    methods:'POST,GET'
+}))
+const endpoints = require("./endPoints")
+app.use('/',endpoints)
+
 const server = http.createServer(app)
-
-app.use(cors)
-app.use(endpoints)
-
-
-
-
-const dbConector = mysql.createConnection({
-    host: '34.122.159.115',
-    user: 'root',
-    password: 'password',
-    database: 'mydb'
-})
 
 /*========================================================================================
 ==================================SOCKET.IO===============================================
@@ -71,7 +63,14 @@ async function pubSubInit() {
     subscription.on('message', message => {
         console.log('Received message:', message.data.toString())
         newUpdates=true
-        emitData=message.data.toString()
+        try {
+            emitData= JSON.parse(message.data.toString()) 
+        } 
+        catch (error) {
+            
+        }
+        console.log(emitData)
+        message.ack()
     })
     subscription.on('error', error => {
         console.error('Received error:', error)
@@ -82,11 +81,8 @@ async function pubSubInit() {
 ====================================INIT SERVER===========================================
 ==========================================================================================*/
 
-pubSubInit()
-
 server.listen(port, () => {
-    
-    console.log(`Listening on port ${port}`)
+    pubSubInit()
+    console.log(`Listen on port ${port}`)
 })
-
 
