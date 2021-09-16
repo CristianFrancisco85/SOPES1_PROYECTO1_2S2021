@@ -1,21 +1,37 @@
 import React,{useState,useEffect} from 'react'
 import './App.css';
 import {BrowserRouter,Switch,Route,Redirect} from 'react-router-dom'
-import {Jumbotron,Row,Col, Container} from 'react-bootstrap'
+import {Jumbotron,Container} from 'react-bootstrap'
 import NavBar from './navBar'
 import Home from './home'
 import Reports from './reports';
 import {GlobalContext} from './globalContext'
-import PubSub from './pubsub';
+import PubSub from './pubsub'
+import socketIOClient from 'socket.io-client'
 
+export const API_URL = "http://localhost:4000"
 
 const App = () => {
 
+
+
   const [data,setData] = useState([])
+  const [response, setResponse] = useState([])
 
   const dataGlobalState = {
     tweetsData : [data,setData],
+    pubSubMsg : [response, setResponse]
   }
+
+  useEffect(() => {
+      const socket = socketIOClient(API_URL)
+      socket.on("FromAPI", data => {
+        setResponse(oldArr => [...oldArr,data])
+        fetch(`${API_URL}/fromCloudSQL`)
+        .then(response => response.json())
+        .then(data => setData(data));
+      })
+  },[])
 
 
   return(

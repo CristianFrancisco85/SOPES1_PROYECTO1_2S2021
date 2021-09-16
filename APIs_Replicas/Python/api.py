@@ -1,5 +1,6 @@
 #pip install flask
 import flask
+import os
 import json
 import time
 from flask.json import jsonify
@@ -10,10 +11,12 @@ from flask import request
 from google.cloud import pubsub_v1
 from datetime import datetime
 
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = './GCPKey.json'
+
 mydb = mysql.connector.connect(
-  host="34.122.159.115",
+  host="34.123.196.134",
   user="root",
-  password="password",
+  password="l9j6oytdaq9DGhbO@",
   database="mydb"
 )
 myDbCursor = mydb.cursor()
@@ -43,9 +46,11 @@ def getItem():
     startTime = time.time()
     hashTagsString = ''
     count =0
-    for item in data:
+    auxData=data.copy()
+    data.clear()
+    for item in auxData:
         for hashtag in item["hashtags"]:
-            hashTagsString = hashTagsString+hashtag+','
+            hashTagsString = hashTagsString+'#'+hashtag+','
         hashTagsString[:-1]
         val = (item["nombre"],item["comentario"],datetime.strptime(item["fecha"],'%d-%m-%Y').strftime('%Y/%m/%d'),hashTagsString,item["upvotes"],item["downvotes"])
         myDbCursor.execute(sqlQuery,val)
@@ -60,5 +65,5 @@ def getItem():
 
     return pubSubData
 
-app.run()
+app.run(host='0.0.0.0')
 

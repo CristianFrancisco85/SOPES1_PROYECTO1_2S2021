@@ -3,16 +3,16 @@ const express = require("express")
 const router = express.Router()
 
 const dbConector = mysql.createConnection({
-  host: '34.122.159.115',
+  host: '34.123.196.134',
   user: 'root',
-  password: 'password',
+  password: 'l9j6oytdaq9DGhbO@',
   database: 'mydb'
 })
 
 
 router.get("/fromCloudSQL",async (req, res) => {
   try {
-    dbConector.query('SELECT * FROM Tweet',(err,result)=>{
+    dbConector.query('SELECT *,DATE_FORMAT(Fecha, "%d-%m-%Y") as Fecha FROM Tweet',(err,result)=>{
       if(err) throw err
       res.send(result)
     })

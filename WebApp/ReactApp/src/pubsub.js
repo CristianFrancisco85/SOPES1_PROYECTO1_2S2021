@@ -1,33 +1,20 @@
-import {useState,useEffect} from "react"
-import socketIOClient from 'socket.io-client'
-import {Col,Row} from 'react-bootstrap'
+import { useContext } from 'react'
+import {Row} from 'react-bootstrap'
+import { useMsgData } from './globalContext'
 import Notification from "./notification"
 
 
 const PubSub = () => { 
-
-    const ENDPOINT = "http://localhost:4000"
-    const [response, setResponse] = useState('')
-
-    useEffect(() => {
-        const socket = socketIOClient(ENDPOINT)
-        socket.on("FromAPI", data => {
-          setResponse(data)
-          console.log(data)
-        })
-      }, [])
+    
+    const [response,setResponse] = useMsgData()
 
     return(
         <>
-        <p>
-        Response {JSON.stringify(response)}
-        </p>
-
         <Row className='justify-content-center'>
-            <Notification></Notification>
-            <Notification></Notification>
+            {response.map((item,index)=>{
+              return <Notification key={index} enum={index} data={item} ></Notification>
+            })}
         </Row>
-
         </>
     )
 

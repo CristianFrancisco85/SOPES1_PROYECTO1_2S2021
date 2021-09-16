@@ -1,0 +1,7 @@
+FROM python:3.9.4
+ADD . /pythonApi
+WORKDIR /pythonApi
+RUN pip install flask
+RUN pip install mysql-connector-python
+RUN pip install --upgrade google-cloud-pubsub
+EXPOSE 5000
