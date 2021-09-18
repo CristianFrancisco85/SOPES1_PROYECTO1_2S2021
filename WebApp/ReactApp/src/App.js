@@ -17,21 +17,25 @@ const App = () => {
 
   const [data,setData] = useState([])
   const [response, setResponse] = useState([])
+  const [dbEndPoint,setDbEndPoint] = useState('fromCloudSQL')
 
   const dataGlobalState = {
     tweetsData : [data,setData],
-    pubSubMsg : [response, setResponse]
+    pubSubMsg : [response, setResponse],
+    dbEndPoint : [dbEndPoint,setDbEndPoint]
   }
 
   useEffect(() => {
       const socket = socketIOClient(API_URL)
       socket.on("FromAPI", data => {
         setResponse(oldArr => [...oldArr,data])
-        fetch(`${API_URL}/fromCloudSQL`)
+        fetch(`${API_URL}/${dbEndPoint}`)
         .then(response => response.json())
         .then(data => setData(data));
       })
   },[])
+
+  
 
 
   return(

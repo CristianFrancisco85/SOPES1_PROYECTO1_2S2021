@@ -10,8 +10,13 @@ from flask import request
 #pip install --upgrade google-cloud-pubsub
 from google.cloud import pubsub_v1
 from datetime import datetime
+#pip install pymongo
+from pymongo import MongoClient
 
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = './GCPKey.json'
+
+client = MongoClient("mongodb://proyecto1-mongodb:FLAJuykpeNXSGoSgvUAq8CdQKwTG6TuiPvucxg3GbusrdEbD4ugMNqGvQmLYuz94iMyxPS4TFn8agUZ971bGrw==@proyecto1-mongodb.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@proyecto1-mongodb@")
+db=client.mydb
 
 mydb = mysql.connector.connect(
   host="34.123.196.134",
@@ -40,14 +45,17 @@ def iniciarCarga():
     data.append(bodyJson)
     return '{ "ok":"true"}'
 
-@app.route('/subirCargaPython', methods=['GET'])
+@app.route('/subirCargaPythonCloudFunction', methods=['GET'])
 def getItem():
     sqlQuery = "INSERT INTO Tweet (Nombre,Comentario,Fecha,Hashtags,Upvotes,Downvotes) VALUES (%s,%s,%s,%s,%s,%s)"
     startTime = time.time()
     hashTagsString = ''
-    count =0
     auxData=data.copy()
     data.clear()
+    countMySql=0
+    countMongoDb=0
+
+    # MySQL Operations
     for item in auxData:
         for hashtag in item["hashtags"]:
             hashTagsString = hashTagsString+'#'+hashtag+','
@@ -55,15 +63,39 @@ def getItem():
         val = (item["nombre"],item["comentario"],datetime.strptime(item["fecha"],'%d-%m-%Y').strftime('%Y/%m/%d'),hashTagsString,item["upvotes"],item["downvotes"])
         myDbCursor.execute(sqlQuery,val)
         mydb.commit()
-        count=count+1
         hashTagsString = ''
-    endTime = time.time() - startTime
+        countMySql=countMySql+1
+    mySqlEndTime = time.time() - startTime
 
-    pubSubData = '{'+ f'"guardados":{count},"api":"Python","tiempoDeCarga":{endTime},"bd":"MySQL"' +'}'
+    # MongoDB Operations
+    startTime = time.time()
+    for item in auxData:
+        for hashtag in item["hashtags"]:
+            hashTagsString = hashTagsString+'#'+hashtag+','
+        hashTagsString[:-1]
+        val = {
+            "Nombre":item["nombre"],
+            "Comentario":item["comentario"],
+            "Fecha":datetime.strptime(item["fecha"],'%d-%m-%Y').strftime('%Y/%m/%d'),
+            "Hashtags":hashTagsString,
+            "Upvotes":item["upvotes"],
+            "Downvotes":item["downvotes"]
+        }
+        db.tweet.insert_one(val)
+        hashTagsString = ''
+        countMongoDb=countMongoDb+1
+    mongoDbEndTime = time.time() - startTime
+
+    # MySQL PubSub
+    pubSubData = '{'+ f'"guardados":{countMySql},"api":"Python","tiempoDeCarga":{mySqlEndTime},"bd":"MySQL"' +'}'
+    pubSubData = pubSubData.encode("utf-8")
+    publisher.publish('projects/sapient-ground-324600/topics/dbUpdates',pubSubData)
+
+    # MongoDB PubSub
+    pubSubData = '{'+ f'"guardados":{countMongoDb},"api":"Python","tiempoDeCarga":{mongoDbEndTime},"bd":"MongoDB"' +'}'
     pubSubData = pubSubData.encode("utf-8")
     publisher.publish('projects/sapient-ground-324600/topics/dbUpdates',pubSubData)
 
     return pubSubData
 
-app.run(host='0.0.0.0')
-
+app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
