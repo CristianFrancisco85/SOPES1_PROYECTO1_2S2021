@@ -19,8 +19,7 @@ const server = http.createServer(app)
 ==================================SOCKET.IO===============================================
 ==========================================================================================*/
 let interval
-let newUpdates = false
-let emitData
+let emitData=[]
 
 const io = require("socket.io")(server,{
     cors: {
@@ -45,10 +44,8 @@ io.on("connection", (socket) => {
 })
 
 const emitUpdates = (socket) => {
-    if(newUpdates){
-        socket.emit("FromAPI",emitData)
-        newUpdates=false
-        emitData=undefined
+    if(emitData.length!=0){
+        socket.emit("FromAPI",emitData.shift())
     }
     
 }
@@ -62,14 +59,12 @@ async function pubSubInit() {
     const subscription = await pubsub.subscription('dbUpdates-sub')
     subscription.on('message', message => {
         console.log('Received message:', message.data.toString())
-        newUpdates=true
         try {
-            emitData= JSON.parse(message.data.toString()) 
+            emitData.push(JSON.parse(message.data.toString())) 
         } 
         catch (error) {
             
         }
-        console.log(emitData)
         message.ack()
     })
     subscription.on('error', error => {

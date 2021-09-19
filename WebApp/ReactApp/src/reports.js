@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import {Card, Col,Row} from 'react-bootstrap'
 import { API_URL } from './App'
 import { useDbEndPoint, useTweetsData } from './globalContext'
-
+import {Doughnut} from 'react-chartjs-2'
 
 const Reports = () => { 
 
@@ -16,11 +16,20 @@ const Reports = () => {
         .then(data => setData(data))
     },[dbEndPoint])
 
-    const getUniqueHashTags = () => {
-        let hashTagsArray = []
+    const getHashTagsArray = () =>{
+        let hashTagsArray=[]
         data.map(item =>{
             hashTagsArray = [...hashTagsArray,...item.Hashtags.split(',')]
         })
+        hashTagsArray=hashTagsArray.filter(item =>{
+            return item!=''
+        })
+        return hashTagsArray
+    }
+
+    const getUniqueHashTags = () => {
+        let hashTagsArray = getHashTagsArray()
+
         _.uniq(_.map(hashTagsArray))
 
         return _.uniq(_.map(hashTagsArray)).length
@@ -42,6 +51,33 @@ const Reports = () => {
         })
 
         return downVotes
+    }
+
+    const getTopHashtags = ()=>{
+
+        let result=[]
+        let hashTagsArray = getHashTagsArray()
+
+        for (let i=0;i<5;i++) {
+            result.push(_.head(_(hashTagsArray)
+            .countBy()
+            .entries()
+            .maxBy(_.last)))
+            hashTagsArray=hashTagsArray.filter(item =>{
+                return item!=result[i]
+            })
+        }
+
+        let counts=[]
+        hashTagsArray = getHashTagsArray()
+        result.map(hashtag =>{
+            let aux=[]
+            aux=hashTagsArray.filter(item =>{
+                return item==hashtag
+            })
+            counts.push(aux.length)
+        })
+        return {result,counts}
     }
 
     return (
@@ -77,6 +113,34 @@ const Reports = () => {
                     </Card.Header>
                     <Card.Body>
                         <h3>{getDownVotes()}</h3>
+                    </Card.Body>
+                </Card>
+            </Row>
+            <Row className='justify-content-center'>
+                <Card className='m-2'>
+                    <Card.Header>
+                        <Card.Title>Top Hashtags</Card.Title>
+                    </Card.Header>
+                    <Card.Body>
+                        <Doughnut data={{
+                            labels: [...getTopHashtags().result],
+                            datasets: [{
+                                label: 'Top HashTags',
+                                data: [...getTopHashtags().counts],
+                                backgroundColor: [
+                                'rgb(227, 20, 20)',
+                                'rgb(54, 162, 235)',
+                                'rgb(128, 58, 181)',
+                                'rgb(43, 224, 76)',
+                                'rgb(242, 171, 48)'
+                                ],
+                                hoverOffset: 4
+                            }]
+                            }
+                        }>
+
+                        </Doughnut>
+                        
                     </Card.Body>
                 </Card>
             </Row>
