@@ -22,3 +22,10 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+#kernel modules
+*/cpu/*
+*/ram/*
+!cpu.c
+!ram.c
+!Makefile

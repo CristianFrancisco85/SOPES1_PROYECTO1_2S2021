@@ -1,0 +1,37 @@
+# Ver módulos almacenados
+$ /lib/modules/[nombre_kernel]
+
+# Ver la versión del kernel
+$ uname -r
+
+# Revisar módulos instalados, esto listará todos los módulos instalados en el kernel
+$ lsmod
+
+# Revisamos o "buscamos" unicamente un módulo
+$ lsmod | grep "[nombre_modulo]"
+
+# Descargar headers del módulo específico que tenemos
+$ sudo apt-get install linux-headers-$(uname -r)
+
+# Descargar build essentials, para compilar el código c
+$ sudo apt-get install build-essential
+
+# Ir al directorio del modulo
+$ cd [directorio_modulo]
+
+# Compilar archivos
+$ make
+
+# Instalar el módulo con el comando insmod
+$ sudo insmod [nombre_modulo].ko
+
+# Revisar los logs de los modulos
+$ sudo dmesg
+
+# Ahora, revisamos el documento generado, cada vez que lo revisemos se reescribirá
+$ cat /proc/[nombre_modulo]
+
+# Eliminar el modulo
+# No se espera ninguna salida cuando este comando es exitoso.
+
+$ sudo rmmod "[nombre_modulo]"
