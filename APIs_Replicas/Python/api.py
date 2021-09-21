@@ -45,7 +45,7 @@ def iniciarCarga():
     data.append(bodyJson)
     return '{ "ok":"true"}'
 
-@app.route('/subirCargaPythonCloudFunction', methods=['GET'])
+@app.route('/subirCargaPython', methods=['GET'])
 def getItem():
     sqlQuery = "INSERT INTO Tweet (Nombre,Comentario,Fecha,Hashtags,Upvotes,Downvotes) VALUES (%s,%s,%s,%s,%s,%s)"
     startTime = time.time()
@@ -87,12 +87,12 @@ def getItem():
     mongoDbEndTime = time.time() - startTime
 
     # MySQL PubSub
-    pubSubData = '{'+ f'"guardados":{countMySql},"api":"Python","tiempoDeCarga":{mySqlEndTime},"bd":"MySQL"' +'}'
+    pubSubData = '{'+ f'"guardados":{countMySql},"api":"Python Docker","tiempoDeCarga":{mySqlEndTime},"bd":"MySQL"' +'}'
     pubSubData = pubSubData.encode("utf-8")
     publisher.publish('projects/sapient-ground-324600/topics/dbUpdates',pubSubData)
 
     # MongoDB PubSub
-    pubSubData = '{'+ f'"guardados":{countMongoDb},"api":"Python","tiempoDeCarga":{mongoDbEndTime},"bd":"MongoDB"' +'}'
+    pubSubData = '{'+ f'"guardados":{countMongoDb},"api":"Python Docker","tiempoDeCarga":{mongoDbEndTime},"bd":"MongoDB"' +'}'
     pubSubData = pubSubData.encode("utf-8")
     publisher.publish('projects/sapient-ground-324600/topics/dbUpdates',pubSubData)
 

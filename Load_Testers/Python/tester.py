@@ -1,18 +1,18 @@
 import json
 import requests
-LOADBALANCER_URL = 'https://pythonapi-cj34bwpl3a-uc.a.run.app'
+LOADBALANCER_URL = 'http://34.149.119.123:80'
 
 myDataFile = open('../data.json',)
 JSONData = json.load(myDataFile)
 
 URL = f'{LOADBALANCER_URL}/iniciarCarga'
 
-input("Presiona cualquier tecla para enviar trafico...")
+input("Presiona Enter para enviar trafico...")
 
 okPost=0
 errorPost=0
 
-for i in JSONData:
+for i in JSONData["data"]:
     x = requests.post(URL, data = json.dumps(i),headers={'Content-Type': 'application/json'})
     if(x.status_code>=300):
         errorPost=errorPost+1
@@ -21,9 +21,9 @@ for i in JSONData:
 print(f'Solicitudes Exitosas:{okPost}')
 print(f'Solicitudes Fracasadas:{errorPost}')
 
-apisEndPoints = ['subirCargaPythonCloudRun']
+apisEndPoints = ['subirCargaPythonCloudRun','subirCargaPython','subirCargaPythonDocker']
 
-input("Presiona cualquier tecla para subir datos...")
+input("Presiona Enter para subir datos...")
 
 for i in apisEndPoints:
     URL = f'{LOADBALANCER_URL}/{i}'
