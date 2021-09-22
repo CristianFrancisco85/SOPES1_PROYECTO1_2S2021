@@ -1,0 +1,8 @@
+FROM golang
+ADD . /goApi
+WORKDIR /goApi
+RUN go get . 
+EXPOSE 8080
+RUN export GOOGLE_APPLICATION_CREDENTIALS=./GCPKey.json
+CMD go run main.go
+

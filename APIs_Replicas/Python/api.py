@@ -87,12 +87,12 @@ def getItem():
     mongoDbEndTime = time.time() - startTime
 
     # MySQL PubSub
-    pubSubData = '{'+ f'"guardados":{countMySql},"api":"Python Docker","tiempoDeCarga":{mySqlEndTime},"bd":"MySQL"' +'}'
+    pubSubData = '{'+ f'"guardados":{countMySql},"api":"Golang Docker","tiempoDeCarga":{mySqlEndTime},"bd":"MySQL"' +'}'
     pubSubData = pubSubData.encode("utf-8")
     publisher.publish('projects/sapient-ground-324600/topics/dbUpdates',pubSubData)
 
     # MongoDB PubSub
-    pubSubData = '{'+ f'"guardados":{countMongoDb},"api":"Python Docker","tiempoDeCarga":{mongoDbEndTime},"bd":"MongoDB"' +'}'
+    pubSubData = '{'+ f'"guardados":{countMongoDb},"api":"Golang Docker","tiempoDeCarga":{mongoDbEndTime},"bd":"MongoDB"' +'}'
     pubSubData = pubSubData.encode("utf-8")
     publisher.publish('projects/sapient-ground-324600/topics/dbUpdates',pubSubData)
 
