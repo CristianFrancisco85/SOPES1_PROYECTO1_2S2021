@@ -1,6 +1,7 @@
 import json
 import requests
-LOADBALANCER_URL = 'http://34.149.119.123:80'
+LOADBALANCER_URL = 'http://192.168.1.7:5000'
+CLOUDRUN_URL = 'https://pythonapi-cj34bwpl3a-uc.a.run.app'
 
 myDataFile = open('../data.json',)
 JSONData = json.load(myDataFile)

@@ -9,7 +9,7 @@ import {GlobalContext} from './globalContext'
 import PubSub from './pubsub'
 import socketIOClient from 'socket.io-client'
 
-export const API_URL = "http://localhost:4000"
+export const API_URL = "https://sapient-ground-324600.uc.r.appspot.com"
 
 const App = () => {
 

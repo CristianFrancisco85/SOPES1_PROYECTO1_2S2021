@@ -65,7 +65,7 @@ async function pubSubInit() {
         catch (error) {
             
         }
-        message.ack()
+        //message.ack()
     })
     subscription.on('error', error => {
         console.error('Received error:', error)
