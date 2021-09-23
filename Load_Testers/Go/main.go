@@ -22,11 +22,14 @@ type Tweet struct {
 	Downvotes  int      `json:"downvotes"`
 }
 
-var LOADBALANCER_URL string = "http://192.168.1.7:5000"
+var LOADBALANCER_URL string
 var okPost int = 0
 var errorPost int = 0
 
 func main() {
+
+	fmt.Println("Ingrese EndPonit: ")
+	fmt.Scanln(LOADBALANCER_URL)
 
 	jsonFile, err := os.Open("../data.json")
 	if err != nil {

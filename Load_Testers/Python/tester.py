@@ -1,13 +1,13 @@
 import json
 import requests
-LOADBALANCER_URL = 'http://192.168.1.7:5000'
-CLOUDRUN_URL = 'https://pythonapi-cj34bwpl3a-uc.a.run.app'
+ENDPOINT = ''
 
 myDataFile = open('../data.json',)
 JSONData = json.load(myDataFile)
 
-URL = f'{LOADBALANCER_URL}/iniciarCarga'
+ENDPOINT = input("Ingrese EndPonit: ")
 
+URL = f'{ENDPOINT}/iniciarCarga'
 input("Presiona Enter para enviar trafico...")
 
 okPost=0
@@ -22,12 +22,12 @@ for i in JSONData["data"]:
 print(f'Solicitudes Exitosas:{okPost}')
 print(f'Solicitudes Fracasadas:{errorPost}')
 
-apisEndPoints = ['subirCargaPythonCloudRun','subirCargaPython','subirCargaPythonDocker']
+apisEndPoints = ['subirCargaPythonCloudRun','subirCargaPython','subirCargaPythonDocker','subirCargaGolangCloudRun','subirCargaGolang','subirCargaGolangDocker']
 
 input("Presiona Enter para subir datos...")
 
 for i in apisEndPoints:
-    URL = f'{LOADBALANCER_URL}/{i}'
+    URL = f'{ENDPOINT}/{i}'
     x = requests.get(URL)
     if(x.status_code>=400):
         print(f'Error en /{i}') 
