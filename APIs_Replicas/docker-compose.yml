@@ -6,3 +6,9 @@ services:
       - "5000:5000"
     volumes:
       - ./Python:/pythonApi
+  go-api:
+    build: ./Go
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./Go:/goApi

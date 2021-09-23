@@ -47,9 +47,9 @@ func main() {
 	router.GET("/tweets", getTweets)
 	router.GET("/", home)
 	router.POST("/iniciarCarga", iniciarCarga)
-	router.GET("/subirCargaGolang", subirCargaGolang)
+	router.GET("/subirCargaGolangDocker", subirCargaGolang)
 
-	router.Run("localhost:8080")
+	router.Run("0.0.0.0:8080")
 }
 func dsn(dbName string, username string, password string, hostname string) string {
 	return fmt.Sprintf("%s:%s@tcp(%s)/%s", username, password, hostname, dbName)
@@ -151,9 +151,9 @@ func subirCargaGolang(c *gin.Context) {
 
 	defer client.Disconnect(ctx)
 	timeMongo := time.Since(start_mongo)
-	json_base := "{\"guardados\":\"%s\", \"api\":%s, \"tiempoDeCarga\":\"%s\", \"bd\":\"%s\"}"
-	json_mysql := fmt.Sprintf(json_base, strconv.FormatInt(int64(countMysql), 10), "Go", timeGo.String(), "MySQL")
-	json_mongo := fmt.Sprintf(json_base, strconv.FormatInt(int64(countMongo), 10), "Go", timeMongo.String(), "MongoDB")
+	json_base := "{\"guardados\":%s, \"api\":\"%s\", \"tiempoDeCarga\":\"%s\", \"bd\":\"%s\"}"
+	json_mysql := fmt.Sprintf(json_base, strconv.FormatInt(int64(countMysql), 10), "Go Docker", timeGo.String(), "MySQL")
+	json_mongo := fmt.Sprintf(json_base, strconv.FormatInt(int64(countMongo), 10), "Go Docker", timeMongo.String(), "MongoDB")
 
 	psctx := context.Background()
 	proj := "sapient-ground-324600"
