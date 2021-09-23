@@ -2,7 +2,7 @@ const mysql = require('mysql')
 const express = require("express")
 const router = express.Router()
 const { MongoClient } = require("mongodb");
-
+clearImmediate
 const dbConector = mysql.createConnection({
   host: '34.123.196.134',
   user: 'root',

@@ -63,9 +63,10 @@ async function pubSubInit() {
             emitData.push(JSON.parse(message.data.toString())) 
         } 
         catch (error) {
-            
+            console.log(error);
+            throw error
         }
-        //message.ack()
+        message.ack()
     })
     subscription.on('error', error => {
         console.error('Received error:', error)
