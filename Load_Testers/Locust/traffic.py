@@ -60,7 +60,7 @@ class Reader():
             # Asignamos el valor del archivo traffic.json a la variable data_file
             with open("../data.json", 'r') as data_file:
                 # Con el valor que leemos de data_file vamos a cargar el array con los datos
-                self.array = json.loads(data_file.read())
+                self.array = json.loads(data_file.read())["data"]
             # Mostramos en consola que hemos finalizado
             
             print (f'>> Reader: Datos cargados correctamente, {len(self.array)} datos -> {getsizeof(self.array)} bytes.')
@@ -107,6 +107,12 @@ class MessageTraffic(HttpUser):
 
         # En este segmento paramos la ejecución del proceso de creación de tráfico
         else:
+            self.client.get("/subirCargaPythonCloudRun")  
+            self.client.get("/subirCargaPython")  
+            self.client.get("/subirCargaPythonDocker")  
+            self.client.get("/subirCargaGolangCloudRun")  
+            self.client.get("/subirCargaGolang")  
+            self.client.get("/subirCargaGolangDocker")  
             print(">> MessageTraffic: Envio de tráfico finalizado, no hay más datos que enviar.")
             # Parar ejecucion del usuario
             self.stop(True) # Se envía True como parámetro para el valor "force", este fuerza a locust a parar el proceso inmediatamente.
@@ -116,7 +122,7 @@ class MessageTraffic(HttpUser):
     @task
     def GetMessages(self):      
         # Realizar una peticion para recibir los datos que hemos guardado
-        self.client.get("/ram")  
-        self.client.get("/cpu")  
-        self.client.get("/subirCargaPythonCloudFunction")  
+        #self.client.get("/ram")  
+        #self.client.get("/cpu")  
+        #self.client.get("/iniciarCarga")  
         self.client.get("/")  

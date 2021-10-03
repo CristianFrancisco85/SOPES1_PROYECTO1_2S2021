@@ -47,7 +47,7 @@ func main() {
 	router.GET("/tweets", getTweets)
 	router.GET("/", home)
 	router.POST("/iniciarCarga", iniciarCarga)
-	router.GET("/subirCargaGolangDocker", subirCargaGolang)
+	router.GET("/subirCargaGolangContainerd", subirCargaGolang)
 
 	router.Run("0.0.0.0:8080")
 }
@@ -89,15 +89,25 @@ func subirCargaGolang(c *gin.Context) {
 		for j := 1; j < len(data[i].Hashtags); j++ {
 			hashtagString += ", #" + data[i].Hashtags[j]
 		}
-		query := fmt.Sprintf(sqlQuery, data[i].Nombre, data[i].Comentario, data[i].Fecha, hashtagString, strconv.FormatInt(data[i].Upvotes, 10), strconv.FormatInt(data[i].Downvotes, 10))
-		fmt.Println(query)
-		/*
-			insert, err := db.Query(query)
-			if err != nil {
-				panic(err.Error())
-			}
-			defer insert.Close()
-		*/
+		yourDate, err := time.Parse("02-01-2006", data[i].Fecha)
+		if err != nil {
+			panic(err.Error())
+		}
+		query := fmt.Sprintf(sqlQuery, data[i].Nombre, data[i].Comentario, yourDate.Format("2006-01-02"), hashtagString, strconv.FormatInt(data[i].Upvotes, 10), strconv.FormatInt(data[i].Downvotes, 10))
+		//fmt.Println(query)
+
+		insert, err := db.Exec(query)
+		if err != nil {
+			panic(err.Error())
+		}
+		lastId, err := insert.LastInsertId()
+
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("Insert: %d\n", lastId)
+		//defer insert.Close()
+
 		countMysql++
 	}
 	commit, err := db.Query("commit")
@@ -135,13 +145,13 @@ func subirCargaGolang(c *gin.Context) {
 		}
 		tweetJson := "{\"Nombre\":\"%s\",\"Comentario\":\"%s\",\"Fecha\":\"%s\",\"Hashtags\":\"%s\",\"Upvotes\":%s,\"Downvotes\":%s}"
 		new_tweet := fmt.Sprintf(tweetJson, data[i].Nombre, data[i].Comentario, data[i].Fecha, hashtagString, strconv.FormatInt(data[i].Upvotes, 10), strconv.FormatInt(data[i].Downvotes, 10))
-		fmt.Println(new_tweet)
+		//fmt.Println(new_tweet)
 		var result map[string]interface{}
 		json.Unmarshal([]byte(new_tweet), &result)
 		datos = append(datos, result)
 		countMongo++
 	}
-	fmt.Println(datos)
+	//fmt.Println(datos)
 
 	insertManyResult, err := collection.InsertMany(context.TODO(), datos)
 	if err != nil {
@@ -152,8 +162,8 @@ func subirCargaGolang(c *gin.Context) {
 	defer client.Disconnect(ctx)
 	timeMongo := time.Since(start_mongo)
 	json_base := "{\"guardados\":%s, \"api\":\"%s\", \"tiempoDeCarga\":\"%s\", \"bd\":\"%s\"}"
-	json_mysql := fmt.Sprintf(json_base, strconv.FormatInt(int64(countMysql), 10), "Go Docker", timeGo.String(), "MySQL")
-	json_mongo := fmt.Sprintf(json_base, strconv.FormatInt(int64(countMongo), 10), "Go Docker", timeMongo.String(), "MongoDB")
+	json_mysql := fmt.Sprintf(json_base, strconv.FormatInt(int64(countMysql), 10), "Go ContainerD", timeGo.String(), "MySQL")
+	json_mongo := fmt.Sprintf(json_base, strconv.FormatInt(int64(countMongo), 10), "Go ContainerD", timeMongo.String(), "MongoDB")
 
 	psctx := context.Background()
 	proj := "sapient-ground-324600"

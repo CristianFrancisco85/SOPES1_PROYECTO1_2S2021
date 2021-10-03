@@ -29,7 +29,7 @@ var errorPost int = 0
 func main() {
 
 	fmt.Println("Ingrese EndPonit: ")
-	fmt.Scanln(LOADBALANCER_URL)
+	fmt.Scanf("%s", &LOADBALANCER_URL)
 
 	jsonFile, err := os.Open("../data.json")
 	if err != nil {
@@ -67,7 +67,7 @@ func main() {
 	fmt.Println("Solicitudes Exitosas:", okPost)
 	fmt.Println("Solicitudes Fracasadas:", errorPost)
 
-	apisEndPoints := [3]string{"subirCargaPythonCloudRun", "subirCargaPython", "subirCargaPythonDocker"}
+	apisEndPoints := [8]string{"subirCargaPythonCloudRun", "subirCargaPython", "subirCargaPythonDocker", "subirCargaPythonContainerd", "subirCargaGolangCloudRun", "subirCargaGolang", "subirCargaGolangDocker", "subirCargaGolangContainerd"}
 
 	fmt.Println("Presiona Enter para subir datos...")
 	fmt.Scanln()
