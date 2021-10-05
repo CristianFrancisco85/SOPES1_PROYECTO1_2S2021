@@ -33,7 +33,6 @@
     └── 
 ```
 
-Documentacion
-
-https://docs.google.com/document/d/1aYnNJNwMsag1wMD4jCwkGZ6YUGCNrjzVeAjOPOmUqrM/edit?usp=sharing
+<a href="./Documentacion/Manual Técnico.pdf"><h2>Manual Técnico</h2></a>
+<a href="./Documentacion/Manual Usuario.pdf"><h2>Manual de Usuario</h2></a>
 
