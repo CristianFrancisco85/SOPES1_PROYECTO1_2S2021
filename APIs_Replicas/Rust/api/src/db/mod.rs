@@ -1,5 +1,7 @@
 use std::fs;
 use crate::model::Tweet;
+use crate::model::TweetRec;
+
 static TWEETS_DB: &str = "data/tweets.json";
 use mongodb::{
     bson::doc,
@@ -24,10 +26,27 @@ fn _write_tweets(tweets: Vec<Tweet>) {
     fs::write(TWEETS_DB, data).expect("Failed to write data.");
 }
 
-pub fn insert_tweet(tweet: Tweet) -> Option<Tweet>{
+pub fn insert_Tweet(tweet: TweetRec) -> Option<TweetRec>{
+    let mut hstgs = "#".to_owned() + &tweet.hashtags[0].clone();
+    let num = tweet.hashtags.len();
+    let mut index = 1;
+    while index < num{
+        hstgs +=  &", ".to_owned();
+        hstgs += &"#".to_owned();
+        hstgs +=&tweet.hashtags[index].clone();
+        index+=1;
+    }
+    let new_tweet = Tweet {
+        Nombre: tweet.nombre.clone(),
+        Comentario: tweet.comentario.clone(),
+        Fecha: tweet.fecha.clone(),
+        Hashtags: hstgs,
+        Upvotes: tweet.upvotes,
+        Downvotes: tweet.downvotes
+    };
     match _tweets() {
         Ok(mut tweets) => {
-            tweets.push(tweet.clone());
+            tweets.push(new_tweet.clone());
             _write_tweets(tweets);
             Some(tweet)
         },
@@ -48,10 +67,10 @@ pub fn empty_tweets() {
 
 pub fn publish_data(){
     let client = Client::with_uri_str("mongodb://proyecto1-mongodb:FLAJuykpeNXSGoSgvUAq8CdQKwTG6TuiPvucxg3GbusrdEbD4ugMNqGvQmLYuz94iMyxPS4TFn8agUZ971bGrw==@proyecto1-mongodb.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@proyecto1-mongodb@").unwrap();
-    add_user(client);
+    add_tweets(client);
 }
 
-fn add_user(client: mongodb::sync::Client){
+fn add_tweets(client: mongodb::sync::Client){
     let db = client.database("mydb");
     let typed_collection = db.collection::<Tweet>("tweet");
     match _tweets() {
