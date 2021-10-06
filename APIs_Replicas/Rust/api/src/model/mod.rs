@@ -20,3 +20,13 @@ pub struct TweetRec {
     pub downvotes: i64
 }
 
+//	json_base := "{\"guardados\":%s, \"api\":\"%s\", \"tiempoDeCarga\":\"%s\", \"bd\":\"%s\"}"
+
+#[derive(Clone, Serialize, Deserialize)]
+pub struct Mensaje {
+    pub guardados: i64,
+    pub api: String,
+    pub tiempoDeCarga: String, 
+    pub bd:String,
+}
+

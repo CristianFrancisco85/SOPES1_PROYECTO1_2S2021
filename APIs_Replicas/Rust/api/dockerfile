@@ -1,0 +1,7 @@
+FROM Rust
+ADD . /rustApi
+WORKDIR /rustApi
+RUN cargo build 
+EXPOSE 8000
+ENV PORT 8000
+CMD cargo run

@@ -1,9 +1,16 @@
+use crate::model::Mensaje;
 use crate::model::Tweet;
 use crate::model::TweetRec;
 use sqlx::mysql::MySqlPoolOptions;
 use std::fs;
+use std::time::{Duration, Instant};
 static TWEETS_DB: &str = "data/tweets.json";
 use mongodb::{bson::doc, sync::Client};
+extern crate gcp_pubsub;
+extern crate goauth;
+use elapsed::ElapsedDuration;
+type Exception = Box<dyn std::error::Error + Send + Sync + 'static>;
+use futures::future::join_all;
 
 fn _tweets() -> Result<Vec<Tweet>, serde_json::Error> {
     let data = fs::read_to_string(TWEETS_DB).expect("Error reading from file");
@@ -62,28 +69,42 @@ pub fn empty_tweets() {
 
 pub fn publish_data() {
     let client = Client::with_uri_str("mongodb://proyecto1-mongodb:FLAJuykpeNXSGoSgvUAq8CdQKwTG6TuiPvucxg3GbusrdEbD4ugMNqGvQmLYuz94iMyxPS4TFn8agUZ971bGrw==@proyecto1-mongodb.mongo.cosmos.azure.com:10255/?ssl=true&replicaSet=globaldb&retrywrites=false&maxIdleTimeMS=120000&appName=@proyecto1-mongodb@").unwrap();
-    add_tweets_mongo(client);
+    let mut rt0 = tokio::runtime::Runtime::new().unwrap();
+    rt0.block_on(add_tweets_mongo(client));
     let mut rt = tokio::runtime::Runtime::new().unwrap();
     rt.block_on(add_tweets_mysql());
 }
 
-fn add_tweets_mongo(client: mongodb::sync::Client) {
+async fn add_tweets_mongo(client: mongodb::sync::Client) {
+    let start = Instant::now();
     let db = client.database("mydb");
     let typed_collection = db.collection::<Tweet>("tweet");
+    let mut subidos: i64 = 0;
     match _tweets() {
         Ok(mut tweets) => {
             typed_collection.insert_many(tweets.clone(), None);
-            _write_tweets(tweets);
+            subidos = tweets.len() as i64;
         }
         Err(_) => (),
     }
+    let duration = start.elapsed();
+
+    let nuevo_mensaje = Mensaje {
+        guardados: subidos,
+        api: "Rustlang".to_owned(),
+        tiempoDeCarga: format!("{}", ElapsedDuration::new(duration)),
+        bd: "MongoDB".to_owned(),
+    };
+    publicar(nuevo_mensaje).await;
 }
 
 async fn add_tweets_mysql() -> Result<(), sqlx::Error> {
+    let start = Instant::now();
     let pool = MySqlPoolOptions::new()
         .max_connections(5)
         .connect("mysql://root:l9j6oytdaq9DGhbO@@34.123.196.134/mydb")
         .await?;
+    let mut tweets_subidos = 0;
     match _tweets() {
         Ok(mut tweets) => {
             let num = tweets.len();
@@ -91,17 +112,39 @@ async fn add_tweets_mysql() -> Result<(), sqlx::Error> {
             while index < num {
                 let query = "INSERT INTO Tweet (Nombre,Comentario,Fecha,Hashtags,Upvotes,Downvotes) VALUES ('".to_owned() +
                 &tweets[index].Nombre.clone()+&"', '".to_owned() + &tweets[index].Comentario +&"', '".to_owned() + 
-                &tweets[index].Fecha  +&"', '".to_owned() + &tweets[index].Hashtags +&"', ".to_owned() + &tweets[index].Upvotes.to_string()+&", ".to_owned()+&tweets[index].Downvotes.to_string() +
-                &");".to_owned();
-                println!("{}",query);
+                &tweets[index].Fecha  +&"', '".to_owned() + &tweets[index].Hashtags +&"', ".to_owned() + &tweets[index].Upvotes.to_string()+
+                &", ".to_owned()+&tweets[index].Downvotes.to_string() + &");".to_owned();
                 sqlx::query(&query).execute(&pool).await.unwrap();
                 sqlx::query("commit;").execute(&pool).await.unwrap();
                 index += 1;
+                tweets_subidos += 1;
             }
             tweets.clear();
             _write_tweets(tweets);
         }
         Err(_) => (),
     }
+    let duration = start.elapsed();
+    let nuevo_mensaje = Mensaje {
+        guardados: tweets_subidos,
+        api: "Rustlang".to_owned(),
+        tiempoDeCarga: format!("{}", ElapsedDuration::new(duration)),
+        bd: "MySQL".to_owned(),
+    };
+    publicar(nuevo_mensaje).await;
+    Ok(())
+}
+
+async fn publicar(menasje: Mensaje) -> Result<(), Exception> {
+    let file_path = "src/GCPKey.json";
+    let topic_name = "dbUpdates";
+    let credentials = goauth::credentials::Credentials::from_file(&file_path).unwrap();
+    let mut client = gcp_pubsub::Client::new(credentials);
+    println!("Refreshed token: {}", client.refresh_token().is_ok());
+    let topic = client.topic(&topic_name);
+    println!("Before sending messages");
+    let results = vec![topic.publish(menasje)];
+    println!("After sending messages");
+    println!("{:?}", join_all(results).await);
     Ok(())
 }

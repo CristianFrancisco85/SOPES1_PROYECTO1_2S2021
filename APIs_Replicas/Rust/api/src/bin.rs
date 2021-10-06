@@ -3,10 +3,10 @@
 #[macro_use]
 extern crate rocket;
 
-use rocket_contrib::json::Json;
 use lib::db;
 use lib::model::Tweet;
 use lib::model::TweetRec;
+use rocket_contrib::json::Json;
 
 fn main() {
     rocket().launch();
@@ -22,26 +22,33 @@ fn say_hello() -> String {
     String::from("SOPES 1 - Proyecto 1\n")
 }
 
-#[post("/iniciarCarga", data="<tweet>")]
+#[post("/iniciarCarga", data = "<tweet>")]
 fn create_Tweet(tweet: Json<TweetRec>) -> Json<Option<TweetRec>> {
     Json(db::insert_Tweet(tweet.0))
 }
 
 #[get("/vaciarJson")]
-fn empty_tweets()-> String {
+fn empty_tweets() -> String {
     db::empty_tweets();
     String::from("Done\n")
 }
 
 #[get("/subirCargaRustDocker")]
-fn publish_data()-> String {
+fn publish_data() -> String {
     db::publish_data();
     String::from("Done\n")
 }
 
 fn rocket() -> rocket::Rocket {
+    db::empty_tweets();
     rocket::ignite().mount(
         "/",
-        routes![get_tweets, say_hello,create_Tweet, empty_tweets, publish_data],
+        routes![
+            get_tweets,
+            say_hello,
+            create_Tweet,
+            empty_tweets,
+            publish_data
+        ],
     )
 }
