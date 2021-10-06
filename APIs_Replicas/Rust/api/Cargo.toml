@@ -16,6 +16,9 @@ path = "src/bin.rs"
 rocket = "0.4"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+sqlx = { version = "0.4.1", features = [ "mysql","runtime-async-std-native-tls" ] }
+async-std = { version = "1.6", features = [ "attributes" ] }
+tokio = { version = "0.3", features = ["full"] }
 
 [dependencies.rocket_contrib]
 version = "0.4"
