@@ -22,7 +22,7 @@ for i in JSONData["data"]:
 print(f'Solicitudes Exitosas:{okPost}')
 print(f'Solicitudes Fracasadas:{errorPost}')
 
-apisEndPoints = ['subirCargaPythonCloudRun','subirCargaPython','subirCargaPythonDocker','subirCargaPythonContainerd','subirCargaGolangCloudRun','subirCargaGolang','subirCargaGolangDocker','subirCargaGolangContainerd']
+apisEndPoints = ['subirCargaPythonCloudRun','subirCargaPython','subirCargaPythonDocker','subirCargaPythonContainerd','subirCargaGolangCloudRun','subirCargaGolang','subirCargaGolangDocker','subirCargaGolangContainerd','subirCargaRust','subirCargaRustDocker','subirCargaRustContainerd']
 
 input("Presiona Enter para subir datos...")
 

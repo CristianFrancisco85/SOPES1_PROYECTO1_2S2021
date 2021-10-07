@@ -11,6 +11,8 @@ extern crate goauth;
 use elapsed::ElapsedDuration;
 type Exception = Box<dyn std::error::Error + Send + Sync + 'static>;
 use futures::future::join_all;
+use chrono::{DateTime, NaiveDate, NaiveDateTime, NaiveTime, Utc};
+use chrono::format::ParseError;
 
 fn _tweets() -> Result<Vec<Tweet>, serde_json::Error> {
     let data = fs::read_to_string(TWEETS_DB).expect("Error reading from file");
@@ -91,7 +93,7 @@ async fn add_tweets_mongo(client: mongodb::sync::Client) {
 
     let nuevo_mensaje = Mensaje {
         guardados: subidos,
-        api: "Rustlang".to_owned(),
+        api: "Rustlang ContainerD".to_owned(),
         tiempoDeCarga: format!("{}", ElapsedDuration::new(duration)),
         bd: "MongoDB".to_owned(),
     };
@@ -110,9 +112,10 @@ async fn add_tweets_mysql() -> Result<(), sqlx::Error> {
             let num = tweets.len();
             let mut index = 0;
             while index < num {
+                let date = NaiveDate::parse_from_str(&tweets[index].Fecha, "%d-%m-%Y").unwrap();
                 let query = "INSERT INTO Tweet (Nombre,Comentario,Fecha,Hashtags,Upvotes,Downvotes) VALUES ('".to_owned() +
                 &tweets[index].Nombre.clone()+&"', '".to_owned() + &tweets[index].Comentario +&"', '".to_owned() + 
-                &tweets[index].Fecha  +&"', '".to_owned() + &tweets[index].Hashtags +&"', ".to_owned() + &tweets[index].Upvotes.to_string()+
+                &date.format("%Y/%m/%d").to_string()  +&"', '".to_owned() + &tweets[index].Hashtags +&"', ".to_owned() + &tweets[index].Upvotes.to_string()+
                 &", ".to_owned()+&tweets[index].Downvotes.to_string() + &");".to_owned();
                 sqlx::query(&query).execute(&pool).await.unwrap();
                 sqlx::query("commit;").execute(&pool).await.unwrap();
@@ -127,7 +130,7 @@ async fn add_tweets_mysql() -> Result<(), sqlx::Error> {
     let duration = start.elapsed();
     let nuevo_mensaje = Mensaje {
         guardados: tweets_subidos,
-        api: "Rustlang".to_owned(),
+        api: "Rustlang ContainerD".to_owned(),
         tiempoDeCarga: format!("{}", ElapsedDuration::new(duration)),
         bd: "MySQL".to_owned(),
     };

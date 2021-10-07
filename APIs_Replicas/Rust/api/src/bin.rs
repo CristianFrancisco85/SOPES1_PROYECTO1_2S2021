@@ -33,7 +33,7 @@ fn empty_tweets() -> String {
     String::from("Done\n")
 }
 
-#[get("/subirCargaRustDocker")]
+#[get("/subirCargaRustContainerd")]
 fn publish_data() -> String {
     db::publish_data();
     String::from("Done\n")

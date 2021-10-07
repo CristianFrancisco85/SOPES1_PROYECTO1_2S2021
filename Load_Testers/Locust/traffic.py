@@ -113,6 +113,9 @@ class MessageTraffic(HttpUser):
             self.client.get("/subirCargaGolangCloudRun")  
             self.client.get("/subirCargaGolang")  
             self.client.get("/subirCargaGolangDocker")  
+            self.client.get("/subirCargaRust")
+            self.client.get("/subirCargaRustDocker")
+            self.client.get("/subirCargaRustContainerd")
             print(">> MessageTraffic: Envio de tráfico finalizado, no hay más datos que enviar.")
             # Parar ejecucion del usuario
             self.stop(True) # Se envía True como parámetro para el valor "force", este fuerza a locust a parar el proceso inmediatamente.
