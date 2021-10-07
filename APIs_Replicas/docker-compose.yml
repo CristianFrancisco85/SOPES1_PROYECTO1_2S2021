@@ -12,3 +12,7 @@ services:
       - "8080:8080"
     volumes:
       - ./Go:/goApi
+  rust-api:
+    build: ./Rust/api
+    ports:
+      - "8000:8000"

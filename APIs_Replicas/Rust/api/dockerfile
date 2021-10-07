@@ -1,0 +1,7 @@
+FROM rust:1.49
+ADD . /rustApi
+WORKDIR /rustApi
+EXPOSE 8000
+ENV PORT 8000
+RUN cargo build --release
+CMD ["./target/release/api"]

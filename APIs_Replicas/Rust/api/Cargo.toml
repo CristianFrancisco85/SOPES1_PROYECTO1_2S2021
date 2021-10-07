@@ -13,9 +13,17 @@ name = "api"
 path = "src/bin.rs"
 
 [dependencies]
+chrono = "0.4"
 rocket = "0.4"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+sqlx = { version = "0.4.1", features = [ "mysql","runtime-async-std-native-tls" ] }
+async-std = { version = "1.6", features = [ "attributes" ] }
+tokio = { version = "0.3", features = ["full"] }
+gcp-pubsub = "0.1.0"
+goauth = { version = "0.6.0-beta1" }
+futures-preview = { version = "0.3.0-alpha.19" }
+elapsed = "0.1"
 
 [dependencies.rocket_contrib]
 version = "0.4"

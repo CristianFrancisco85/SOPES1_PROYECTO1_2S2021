@@ -67,7 +67,7 @@ func main() {
 	fmt.Println("Solicitudes Exitosas:", okPost)
 	fmt.Println("Solicitudes Fracasadas:", errorPost)
 
-	apisEndPoints := [8]string{"subirCargaPythonCloudRun", "subirCargaPython", "subirCargaPythonDocker", "subirCargaPythonContainerd", "subirCargaGolangCloudRun", "subirCargaGolang", "subirCargaGolangDocker", "subirCargaGolangContainerd"}
+	apisEndPoints := [11]string{"subirCargaPythonCloudRun", "subirCargaPython", "subirCargaPythonDocker", "subirCargaPythonContainerd", "subirCargaGolangCloudRun", "subirCargaGolang", "subirCargaGolangDocker", "subirCargaGolangContainerd", "subirCargaRust", "subirCargaRustDocker", "subirCargaRustContainerd"}
 
 	fmt.Println("Presiona Enter para subir datos...")
 	fmt.Scanln()

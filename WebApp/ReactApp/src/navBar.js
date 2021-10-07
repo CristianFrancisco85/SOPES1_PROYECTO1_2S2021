@@ -54,6 +54,10 @@ const NavBar = () => {
             PubSub
             </Nav.Link>
 
+            <Nav.Link href="http://34.70.166.89:3000/d/0iiI5LH7k/proyecto-1?orgId=1&refresh=5s">
+            Grafana
+            </Nav.Link>
+
         </Nav>
             <Button variant={`${cosmosState}warning`} className='mr-2' size='sm' onClick={handleCosmosClick}>CosmosDB</Button>
             <Button variant={`${cloudState}warning`} className='ml-2' size='sm' onClick={handleCloudClick}>CloudSQL</Button>
