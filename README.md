@@ -1,37 +1,7 @@
-# SOPES1_PROYECTO1_2S2021
-<h1>Hacer commits solo a rama main</h1>
+# Sistemas Operativos 1, Segundo Semestre 2021, Proyecto 1
 
-```
-.
-├── APIs_Replicas
-|   ├── Go
-|   │   └── api.go
-|   ├── Rust
-|   │   └── api.rs
-|   └── Python
-|       └── api.py
-├── Load_Testers
-|   ├── Locust
-|   │   └── 
-|   ├── Go
-|   │   └── tester.go
-|   └── Python
-|       └── tester.py
-├── Docker
-|   ├── DockerFiles
-|   │   └── 
-|   ├── DockerComposeFiles
-|       └── 
-├── WebApp
-|   ├── ReactApp
-|   │   └── 
-|   ├── AppEngine
-|       └── 
-├── KernelModules
-|   └── 
-├── Monitoreo
-    └── 
-```
+<img src="./Arquitectura.png">
+
 
 <a href="./Documentacion/Manual Técnico.pdf"><h2>Manual Técnico</h2></a>
 
